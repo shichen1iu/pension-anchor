@@ -8,8 +8,8 @@ pub struct DepositSol<'info> {
     #[account(
         init,
         payer = user,
-        seeds = [b"doposit".as_ref(), user.key().as_ref()],
-        space = 8 + 4 + 2 + 1,
+        seeds = [b"pension_sol".as_ref(), user.key().as_ref()],
+        space = Pension::LEN,
         bump
     )]
     pub pension_account: Account<'info, Pension>,
@@ -19,7 +19,7 @@ pub struct DepositSol<'info> {
 }
 
 
-pub fn deposit_sol(
+pub fn initialize_sol(
     ctx: Context<DepositSol>,
     amount: u64,
     expected_lamports: u16,
@@ -40,6 +40,7 @@ pub fn deposit_sol(
 
     pension_account.expected_lamports = expected_lamports;
     pension_account.expected_year = expected_year;
+    pension_account.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30;
 
     Ok(())
 }

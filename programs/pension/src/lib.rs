@@ -19,17 +19,19 @@ pub mod pension {
         expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
-        instructions::deposit_sol(ctx, amount, expected_lamports, expected_year)?;
+        instructions::initialize_sol(ctx, amount, expected_lamports, expected_year)?;
         Ok(())
     }
 
-    pub fn deposit_usdc(
-        ctx: Context<DepositUsdc>,
+    pub fn initialize_usdc(
+        ctx: Context<InitializeUsdc>,
         amount: u64,
-        expected_usdc: u16,
+        expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
-        instructions::deposit_usdc(ctx, amount, expected_usdc, expected_year)?;
+        instructions::initialize_usdc(ctx, amount, expected_lamports, expected_year)?;
         Ok(())
     }
+
+    
 }
