@@ -21,7 +21,6 @@ pub struct DepositSol<'info> {
 
 pub fn initialize_sol(
     ctx: Context<DepositSol>,
-    amount: u64,
     expected_lamports: u16,
     expected_year: u8,
 ) -> Result<()> {
@@ -35,7 +34,7 @@ pub fn initialize_sol(
                 to: pension_account.to_account_info(),
             },
         ),
-        amount,
+        expected_lamports as u64,
     )?;
 
     pension_account.expected_lamports = expected_lamports;

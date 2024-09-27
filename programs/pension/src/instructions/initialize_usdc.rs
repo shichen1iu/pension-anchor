@@ -34,7 +34,6 @@ pub struct InitializeUsdc<'info> {
 
 pub fn initialize_usdc(
     ctx: Context<InitializeUsdc>,
-    amount: u64,
     expected_lamports: u16,
     expected_year: u8,
 ) -> Result<()> {
@@ -43,7 +42,7 @@ pub fn initialize_usdc(
     pension_user_info.expected_lamports = expected_lamports;
     pension_user_info.expected_year = expected_year;
     pension_user_info.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30;
-    pension_user_info.amount = amount;
+    pension_user_info.amount = expected_lamports as u64;
 
     // 转账
     let cpi_accounts = TransferChecked {
@@ -54,6 +53,6 @@ pub fn initialize_usdc(
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-    transfer_checked(cpi_ctx, amount, 6)?;
+    transfer_checked(cpi_ctx, expected_lamports as u64, 6)?;
     Ok(())
 }

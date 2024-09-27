@@ -15,21 +15,19 @@ pub mod pension {
 
     pub fn deposit_sol(
         ctx: Context<DepositSol>,
-        amount: u64,
         expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
-        instructions::initialize_sol(ctx, amount, expected_lamports, expected_year)?;
+        instructions::initialize_sol(ctx, expected_lamports, expected_year)?;
         Ok(())
     }
 
     pub fn initialize_usdc(
         ctx: Context<InitializeUsdc>,
-        amount: u64,
         expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
-        instructions::initialize_usdc(ctx, amount, expected_lamports, expected_year)?;
+        instructions::initialize_usdc(ctx, expected_lamports, expected_year)?;
         Ok(())
     }
 
