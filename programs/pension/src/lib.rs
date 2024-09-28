@@ -2,6 +2,7 @@ use anchor_lang::prelude::*;
 
 pub mod instructions;
 pub mod state;
+pub mod error;
 
 use instructions::*;
 
@@ -13,8 +14,8 @@ pub mod pension {
 
     use super::*;
 
-    pub fn deposit_sol(
-        ctx: Context<DepositSol>,
+    pub fn initialize_sol(
+        ctx: Context<InitializeSol>,
         expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
@@ -22,12 +23,12 @@ pub mod pension {
         Ok(())
     }
 
-    pub fn initialize_usdc(
-        ctx: Context<InitializeUsdc>,
+    pub fn initialize_token(
+        ctx: Context<InitializeToken>,
         expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
-        instructions::initialize_usdc(ctx, expected_lamports, expected_year)?;
+        instructions::initialize_token(ctx, expected_lamports, expected_year)?;
         Ok(())
     }
 

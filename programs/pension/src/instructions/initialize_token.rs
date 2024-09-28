@@ -6,14 +6,14 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-pub struct InitializeUsdt<'info> {
+pub struct InitializeToken<'info> {
     #[account(
         init,
         payer = user,
-        associated_token::mint = usdt,
+        associated_token::mint = usdc_usdt_mint ,
         associated_token::authority = user,
     )]
-    pub pension_usdt_token_account: Account<'info, TokenAccount>,
+    pub pension_token_account: Account<'info, TokenAccount>,
     #[account(
         init,
         seeds = [b"pension_userinfo".as_ref(), user.key().as_ref()],
@@ -23,17 +23,17 @@ pub struct InitializeUsdt<'info> {
     )]
     pub pension_user_info: Account<'info, Pension>,
     #[account(mut)]
-    pub user_usdt_token_account: Account<'info, TokenAccount>,
+    pub user_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub user: Signer<'info>,
-    pub usdt: Account<'info, Mint>, //usdt地址
+    pub usdc_usdt_mint: Account<'info, Mint>, //usdt/usdc地址
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
-pub fn initialize_usdt(
-    ctx: Context<InitializeUsdt>,
+pub fn initialize_token(
+    ctx: Context<InitializeToken>,
     expected_lamports: u16,
     expected_year: u8,
 ) -> Result<()> {
@@ -46,9 +46,9 @@ pub fn initialize_usdt(
 
     // 转账
     let cpi_accounts = TransferChecked {
-        from: ctx.accounts.user_usdt_token_account.to_account_info(),
-        mint: ctx.accounts.usdt.to_account_info(),
-        to: ctx.accounts.pension_usdt_token_account.to_account_info(),
+        from: ctx.accounts.user_token_account.to_account_info(),
+        mint: ctx.accounts.usdc_usdt_mint.to_account_info(),
+        to: ctx.accounts.pension_token_account.to_account_info(),
         authority: ctx.accounts.user.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
