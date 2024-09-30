@@ -14,3 +14,5 @@ pub use deposit_token::*;
 mod close_sol_account;
 pub use close_sol_account::*;
 
+mod close_token_account;
+pub use close_token_account::*;

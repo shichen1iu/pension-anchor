@@ -1,6 +1,6 @@
+use crate::error::PensionError;
 use crate::state::Pension;
 use anchor_lang::prelude::*;
-
 #[derive(Accounts)]
 pub struct CloseSolAccount<'info> {
     #[account(
@@ -13,7 +13,13 @@ pub struct CloseSolAccount<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn close_sol_account(_ctx: Context<CloseSolAccount>) -> Result<()> {
-    
-    Ok(())
+pub fn close_sol_account(ctx: Context<CloseSolAccount>) -> Result<()> {
+    // 检查账户是否可以关闭
+    if ctx.accounts.pension_account.to_account_info().lamports() == 0 {
+        // 账户关闭逻辑已经在 #[account(close = user)] 中处理
+        msg!("Pension account closed successfully");
+        Ok(())
+    } else {
+        Err(PensionError::AccountNotCloseable.into())
+    }
 }

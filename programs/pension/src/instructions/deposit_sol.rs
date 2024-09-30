@@ -34,7 +34,7 @@ pub fn deposit_sol(ctx: Context<DepositSol>) -> Result<()> {
                 to: pension_account.to_account_info(),
             },
         ),
-        pension_account.expected_lamports as u64,
+        pension_account.expected_amount as u64,
     )?;
 
     Ok(())

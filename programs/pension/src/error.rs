@@ -10,4 +10,8 @@ pub enum PensionError {
     InvalidExpectedAmount,
     #[msg("Insufficient balance")]
     InsufficientBalance,
+    #[msg("Invalid token mint")]
+    InvalidTokenMint,
+    #[msg("Account not closeable")]
+    AccountNotCloseable,
 }
