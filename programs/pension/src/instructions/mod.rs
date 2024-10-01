@@ -16,3 +16,6 @@ pub use close_sol_account::*;
 
 mod close_token_account;
 pub use close_token_account::*;
+
+mod check_and_close_pension;
+pub use check_and_close_pension::*;
