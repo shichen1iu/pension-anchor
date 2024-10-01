@@ -19,7 +19,7 @@ pub mod pension {
         expected_lamports: u16,
         expected_year: u8,
     ) -> ProgramResult {
-        instructions::initialize_sol(ctx, expected_lamports, expected_year)?;
+        instructions::initialize_sol(ctx, expected_lamports, expected_year, thread_id)?;
         Ok(())
     }
 

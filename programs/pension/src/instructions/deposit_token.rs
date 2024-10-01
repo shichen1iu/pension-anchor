@@ -21,13 +21,13 @@ pub fn deposit_usdc(ctx: Context<DepositUsdc>) -> Result<()> {
     let pension_user_info = &mut ctx.accounts.pension_user_info;
 
     // 判断冷却时间是否超过30天
-    let current_timestamp = Clock::get()?.unix_timestamp;
-    if current_timestamp < pension_user_info.cooldown {
+    let current_time = Clock::get()?.unix_timestamp;
+    if current_time < pension_user_info.cooldown {
         return Err(PensionError::CooldownNotExpired.into());
     }
 
     // 重置冷却时间
-    pension_user_info.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
+    pension_user_info.cooldown = current_time + 60 * 60 * 24 * 30; // 30 days from now
 
     // 更新已经存储的金额
     pension_user_info.amount += pension_user_info.expected_amount as u64;
@@ -41,5 +41,13 @@ pub fn deposit_usdc(ctx: Context<DepositUsdc>) -> Result<()> {
     let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
     transfer(cpi_ctx, pension_user_info.expected_amount as u64)?;
+
+    // 打印当前的 pension 信息
+    msg!(
+        "Current pension amount: {} lamports, updated at: {}",
+        pension_user_info.amount,
+        current_time
+    );
+
     Ok(())
 }

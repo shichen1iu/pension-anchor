@@ -17,13 +17,13 @@ pub fn deposit_sol(ctx: Context<DepositSol>) -> Result<()> {
     let pension_account = &mut ctx.accounts.pension_account;
 
     // 判断冷却时间是否超过30天
-    let current_timestamp = Clock::get()?.unix_timestamp;
-    if current_timestamp < pension_account.cooldown {
+    let current_time = Clock::get()?.unix_timestamp;
+    if current_time < pension_account.cooldown {
         return Err(PensionError::CooldownNotExpired.into());
     }
 
     // 重置冷却时间
-    pension_account.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
+    pension_account.cooldown = current_time + 60 * 60 * 24 * 30; // 30 days from now
 
     //转账
     system_program::transfer(
@@ -36,6 +36,13 @@ pub fn deposit_sol(ctx: Context<DepositSol>) -> Result<()> {
         ),
         pension_account.expected_amount as u64,
     )?;
+
+    // 打印当前的 pension 信息
+    msg!(
+        "Current pension amount: {} lamports, updated at: {}",
+        pension_account.to_account_info().lamports(),
+        current_time
+    );
 
     Ok(())
 }

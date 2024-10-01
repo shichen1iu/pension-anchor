@@ -48,18 +48,20 @@ pub fn initialize_token(
     expected_year: u8,    // 期望年份
 ) -> Result<()> {
     // 判断用户传入的是否是usdc/usdt
-    let usdc = Pubkey::from_str("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v").unwrap();
-    let usdt = Pubkey::from_str("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB").unwrap();
+    let usdc = Pubkey::from_str("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU").unwrap();
+    let usdt = Pubkey::from_str("HY6uvCfBQhKANRxBcYLBK7aUva8mT7mLP2SjrLLmipza").unwrap();
 
     if ctx.accounts.usdc_usdt_mint.key() != usdc && ctx.accounts.usdc_usdt_mint.key() != usdt {
         return Err(PensionError::InvalidTokenMint.into());
     }
 
+    let current_time = Clock::get()?.unix_timestamp;
+
     // 获取当前的用户 Pension 信息并更新
     let pension_user_info = &mut ctx.accounts.pension_user_info;
     pension_user_info.expected_amount = expected_amount;
     pension_user_info.expected_year = expected_year;
-    pension_user_info.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30; // 30天的冷却期
+    pension_user_info.cooldown = current_time + 60 * 60 * 24 * 30; // 30天的冷却期
     pension_user_info.amount = expected_amount as u64;
 
     // 构建 CPI 转账操作
@@ -73,6 +75,13 @@ pub fn initialize_token(
 
     // 执行转账，单位为 lamports（记得根据代币的小数位调整）
     transfer(cpi_ctx, expected_amount as u64)?;
+
+    // 打印当前的 pension 信息
+    msg!(
+        "Current pension amount: {} lamports, updated at: {}",
+        pension_user_info.amount,
+        current_time
+    );
 
     Ok(())
 }
