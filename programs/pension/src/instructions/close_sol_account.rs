@@ -14,9 +14,6 @@ pub struct CloseSolAccount<'info> {
 
 pub fn close_sol_account(ctx: Context<CloseSolAccount>) -> Result<()> {
     let sol_amount = ctx.accounts.pension_account.to_account_info().lamports();
-    msg!(
-        "Closing pension account and transferring {} lamports to user",
-        sol_amount
-    );
+    msg!("已关闭养老金账户,并将 {} lamports转给用户", sol_amount);
     Ok(())
 }

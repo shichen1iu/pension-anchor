@@ -2,18 +2,14 @@ use anchor_lang::error_code;
 
 #[error_code]
 pub enum PensionError {
-    #[msg("Cooldown period has not expired yet")]
+    #[msg("请30天后再存款")]
     CooldownNotExpired,
-    #[msg("Invalid expected year")]
-    InvalidExpectedYear,
-    #[msg("Invalid expected amount")]
-    InvalidExpectedAmount,
-    #[msg("Insufficient balance")]
-    InsufficientBalance,
-    #[msg("Invalid token mint")]
+    #[msg("请传入自己的token账户")]
+    InvalidTokenOwner,
+    #[msg("请传入usdc/usdt的mint地址")]
     InvalidTokenMint,
-    #[msg("Account not closeable")]
-    AccountNotCloseable,
+    #[msg("请传入正确的token账户")]
+    InvalidTokenAccount,
     #[msg("未达到自动关闭账户时间")]
     AccountClosureTimeNotYetReached,
 }

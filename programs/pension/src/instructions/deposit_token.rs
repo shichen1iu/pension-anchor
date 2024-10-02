@@ -4,20 +4,24 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
-pub struct DepositUsdc<'info> {
-    #[account(mut)]
+pub struct DepositToken<'info> {
+    #[account(
+        mut,
+        constraint = pension_token_account.mint == token.key() @ PensionError::InvalidTokenAccount,
+        constraint = pension_token_account.owner == user.key() @ PensionError::InvalidTokenOwner
+    )]
     pub user_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
-    pub pension_token_account: Account<'info, Pension>,
+    pub pension_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub pension_user_info: Account<'info, Pension>,
     #[account(mut)]
     pub user: Signer<'info>,
-    pub usdc: Account<'info, Mint>,
+    pub token: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
 }
 
-pub fn deposit_usdc(ctx: Context<DepositUsdc>) -> Result<()> {
+pub fn deposit_token(ctx: Context<DepositToken>) -> Result<()> {
     let pension_user_info = &mut ctx.accounts.pension_user_info;
 
     // 判断冷却时间是否超过30天
@@ -29,9 +33,6 @@ pub fn deposit_usdc(ctx: Context<DepositUsdc>) -> Result<()> {
     // 重置冷却时间
     pension_user_info.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
 
-    // 更新已经存储的金额
-    pension_user_info.amount += pension_user_info.expected_amount as u64;
-
     // 转账
     let cpi_accounts = Transfer {
         from: ctx.accounts.user_token_account.to_account_info(),
@@ -41,5 +42,8 @@ pub fn deposit_usdc(ctx: Context<DepositUsdc>) -> Result<()> {
     let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
     transfer(cpi_ctx, pension_user_info.expected_amount as u64)?;
+
+    // 更新已经存储的金额
+    pension_user_info.amount += pension_user_info.expected_amount as u64;
     Ok(())
 }

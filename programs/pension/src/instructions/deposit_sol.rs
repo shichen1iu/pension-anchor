@@ -37,5 +37,7 @@ pub fn deposit_sol(ctx: Context<DepositSol>) -> Result<()> {
         pension_account.expected_amount as u64,
     )?;
 
+    // 更新已经存储的金额
+    pension_account.amount += pension_account.expected_amount as u64;
     Ok(())
 }

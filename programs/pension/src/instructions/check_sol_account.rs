@@ -3,7 +3,7 @@ use crate::state::Pension;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
-pub struct CheckAndClosePension<'info> {
+pub struct CheckSolAccount<'info> {
     #[account(
         mut,
         close = user,
@@ -20,7 +20,7 @@ pub struct CheckAndClosePension<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn check_sol_account(ctx: Context<CheckAndClosePension>) -> Result<()> {
+pub fn check_sol_account(ctx: Context<CheckSolAccount>) -> Result<()> {
     let pension_account = &mut ctx.accounts.pension_account;
     let current_time = Clock::get()?.unix_timestamp;
 
@@ -41,7 +41,7 @@ pub fn check_sol_account(ctx: Context<CheckAndClosePension>) -> Result<()> {
         **pension_account
             .to_account_info()
             .try_borrow_mut_lamports()? = 0;
-        **ctx.accounts.user_sol_wallet.try_borrow_mut_lamports()? += sol_amount;
+        **ctx.accounts.user.try_borrow_mut_lamports()? += sol_amount;
     } else {
         return Err(PensionError::AccountClosureTimeNotYetReached.into());
     }

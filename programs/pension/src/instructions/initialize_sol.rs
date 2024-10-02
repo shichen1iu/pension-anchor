@@ -11,7 +11,6 @@ pub struct InitializeSol<'info> {
         seeds = [b"pension_sol".as_ref(), user.key().as_ref()],
         space = Pension::LEN,
         bump,
-
     )]
     pub pension_account: Account<'info, Pension>,
     #[account(mut)]
@@ -41,6 +40,7 @@ pub fn initialize_sol(
 
     pension_account.expected_amount = expected_lamports;
     pension_account.expected_year = expected_year;
+    pension_account.amount = expected_lamports as u64;
     pension_account.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30;
 
     Ok(())

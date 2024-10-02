@@ -34,6 +34,6 @@ pub fn close_token_account(ctx: Context<CloseTokenAccount>) -> Result<()> {
 
     // 2. 然后，关闭 pension token 账户,这一步可以通过close=user 自动完成
 
-    msg!("Token transferred and account closed successfully");
+    msg!("已关闭养老金账户,并将{}个token转给用户", transfer_amount);
     Ok(())
 }
