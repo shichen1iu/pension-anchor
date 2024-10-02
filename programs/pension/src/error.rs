@@ -14,4 +14,6 @@ pub enum PensionError {
     InvalidTokenMint,
     #[msg("Account not closeable")]
     AccountNotCloseable,
+    #[msg("未达到自动关闭账户时间")]
+    AccountClosureTimeNotYetReached,
 }

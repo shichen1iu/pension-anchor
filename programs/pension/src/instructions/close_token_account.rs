@@ -1,18 +1,16 @@
-use crate::state::Pension;
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, CloseAccount, Token, TokenAccount};
+use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
 pub struct CloseTokenAccount<'info> {
-    #[account(mut)]
-    pub pension_user_info: Account<'info, Pension>,
-
     #[account(
         mut,
-        close = user,
-        constraint = pension_token_account.owner == user.key() ,
+    close=user
     )]
     pub pension_token_account: Account<'info, TokenAccount>,
+
+    #[account(mut)]
+    pub user_token_account: Account<'info, TokenAccount>,
 
     #[account(mut)]
     pub user: Signer<'info>,
@@ -20,17 +18,22 @@ pub struct CloseTokenAccount<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn close_pension_token_account(ctx: Context<CloseTokenAccount>) -> Result<()> {
-    // 关闭 pension_token_account
-    let cpi_accounts = CloseAccount {
-        account: ctx.accounts.pension_token_account.to_account_info(),
-        destination: ctx.accounts.user.to_account_info(),
+pub fn close_token_account(ctx: Context<CloseTokenAccount>) -> Result<()> {
+    // 1. 首先，转移所有 token 到用户的 token 账户
+    let transfer_amount = ctx.accounts.pension_token_account.amount;
+
+    let cpi_accounts_transfer = Transfer {
+        from: ctx.accounts.pension_token_account.to_account_info(),
+        to: ctx.accounts.user_token_account.to_account_info(),
         authority: ctx.accounts.user.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-    token::close_account(cpi_ctx)?;
+    let cpi_ctx_transfer = CpiContext::new(cpi_program.clone(), cpi_accounts_transfer);
 
-    msg!("Token account closed successfully");
+    token::transfer(cpi_ctx_transfer, transfer_amount)?;
+
+    // 2. 然后，关闭 pension token 账户,这一步可以通过close=user 自动完成
+
+    msg!("Token transferred and account closed successfully");
     Ok(())
 }
