@@ -65,6 +65,7 @@ pub fn initialize_token(
                                                                                    // pension_user_info.cooldown = Clock::get()?.unix_timestamp ; //  1s后到期
 
     pension_user_info.amount = expected_amount;
+    pension_user_info.remain_month = -1;
 
     // 构建 CPI 转账操作
     let cpi_accounts = Transfer {

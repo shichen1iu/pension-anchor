@@ -58,14 +58,14 @@ pub mod pension {
     }
 
     //关闭sol养老金账户
-    pub fn close_sol_account(ctx: Context<CloseSolAccount>) -> ProgramResult {
-        instructions::close_sol_account(ctx)?;
+    pub fn close_sol_account(ctx: Context<CloseSolAccount>, expected_month: u8) -> ProgramResult {
+        instructions::close_sol_account(ctx, expected_month)?;
         Ok(())
     }
 
     //关闭usdc/usdt养老金账户
-    pub fn close_token_account(ctx: Context<CloseTokenAccount>) -> ProgramResult {
-        instructions::close_token_account(ctx)?;
+    pub fn close_token_account(ctx: Context<CloseTokenAccount>, expected_month: u8) -> ProgramResult {
+        instructions::close_token_account(ctx, expected_month)?;
         Ok(())
     }
 }

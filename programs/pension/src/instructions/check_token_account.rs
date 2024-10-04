@@ -63,7 +63,10 @@ pub fn check_token_account(ctx: Context<CheckTokenAccount>) -> Result<()> {
                 authority: ctx.accounts.user.to_account_info(),
             },
         ))?;
-        msg!("已关自动闭养老金账户,并将 {} 代币转还给用户", transfer_amount);
+        msg!(
+            "已关自动闭养老金账户,并将 {} 代币转还给用户",
+            transfer_amount
+        );
     } else {
         return Err(PensionError::AccountClosureTimeNotYetReached.into());
     }

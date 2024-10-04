@@ -204,7 +204,7 @@ describe("pension", () => {
 
   it("Close SOL account", async () => {
     const tx = await program.methods
-      .closeSolAccount()
+      .closeSolAccount(4)
       .accounts({
         pensionAccount: pensionSolPda,
         user: user.publicKey,
@@ -230,7 +230,7 @@ describe("pension", () => {
       );
 
       const tx = await program.methods
-        .closeTokenAccount()
+        .closeTokenAccount(4)
         .accounts({
           pensionTokenAccount: pensionTokenAccount,
           userTokenAccount: userUsdcAccount,

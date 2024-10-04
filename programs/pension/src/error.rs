@@ -12,4 +12,6 @@ pub enum PensionError {
     InvalidTokenAccount,
     #[msg("未达到自动关闭账户时间")]
     AccountClosureTimeNotYetReached,
+    #[msg("请传入正确的预期月份")]
+    InvalidExpectedMonth,
 }
