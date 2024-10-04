@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use crate::error::PensionError;
 use crate::state::Pension;
 use anchor_lang::prelude::*;
@@ -45,22 +47,22 @@ pub fn initialize_token(
     expected_amount: u64, // 存款金额
     expected_year: u8,    // 期望年份
 ) -> Result<()> {
-    //test
-    // 判断用户传入的是否是usdc/usdt
-    // let usdc = Pubkey::from_str("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v").unwrap();
-    // let usdt = Pubkey::from_str("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB").unwrap();
+    // test
+    //判断用户传入的是否是usdc/usdt
+    let usdc = Pubkey::from_str("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v").unwrap();
+    let usdt = Pubkey::from_str("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB").unwrap();
 
-    // if ctx.accounts.usdc_usdt_mint.key() != usdc && ctx.accounts.usdc_usdt_mint.key() != usdt {
-    //     return Err(PensionError::InvalidTokenMint.into());
-    // }
+    if ctx.accounts.usdc_usdt_mint.key() != usdc && ctx.accounts.usdc_usdt_mint.key() != usdt {
+        return Err(PensionError::InvalidTokenMint.into());
+    }
 
     // 获取当前的用户 Pension 信息并更新
     let pension_user_info = &mut ctx.accounts.pension_user_info;
     pension_user_info.expected_amount = expected_amount;
     pension_user_info.expected_year = expected_year;
-    // pension_user_info.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30; // 30天的冷却期
-    //test
-    pension_user_info.cooldown = Clock::get()?.unix_timestamp ; //  1s后到期
+    pension_user_info.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30; // 30天的冷却期
+                                                                                   //test
+                                                                                   // pension_user_info.cooldown = Clock::get()?.unix_timestamp ; //  1s后到期
 
     pension_user_info.amount = expected_amount;
 

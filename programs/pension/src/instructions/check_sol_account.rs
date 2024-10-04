@@ -42,6 +42,10 @@ pub fn check_sol_account(ctx: Context<CheckSolAccount>) -> Result<()> {
             .to_account_info()
             .try_borrow_mut_lamports()? = 0;
         **ctx.accounts.user.try_borrow_mut_lamports()? += sol_amount;
+        msg!(
+            "已关自动闭养老金账户,并将 {} lamports转还给用户",
+            sol_amount
+        );
     } else {
         return Err(PensionError::AccountClosureTimeNotYetReached.into());
     }

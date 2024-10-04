@@ -1,7 +1,7 @@
 use crate::error::PensionError;
 use crate::state::Pension;
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{self, CloseAccount, Mint, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
 pub struct CheckTokenAccount<'info> {
@@ -54,7 +54,16 @@ pub fn check_token_account(ctx: Context<CheckTokenAccount>) -> Result<()> {
             transfer_amount * 10u64.pow(ctx.accounts.usdc_usdt_mint.decimals as u32),
         )?;
 
-        // 2. 然后，关闭 pension token 账户,这一步可以通过close=user 自动完成
+        // 2. 然后，关闭 pension token 账户
+        token::close_account(CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            CloseAccount {
+                account: ctx.accounts.pension_token_account.to_account_info(),
+                destination: ctx.accounts.user.to_account_info(),
+                authority: ctx.accounts.user.to_account_info(),
+            },
+        ))?;
+        msg!("已关自动闭养老金账户,并将 {} 代币转还给用户", transfer_amount);
     } else {
         return Err(PensionError::AccountClosureTimeNotYetReached.into());
     }

@@ -26,24 +26,24 @@ pub fn deposit_token(ctx: Context<DepositToken>) -> Result<()> {
 
     // 判断冷却时间是否超过30天
     let current_timestamp = Clock::get()?.unix_timestamp;
-    //test 
-    // if current_timestamp  < pension_user_info.cooldown {
-    //     return Err(PensionError::CooldownNotExpired.into());
-    // }
+    //test
+    if current_timestamp < pension_user_info.cooldown {
+        return Err(PensionError::CooldownNotExpired.into());
+    }
 
     // 重置冷却时间
-    // pension_user_info.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
-    //test
-    pension_user_info.cooldown = current_timestamp; // 1s后到期
+    pension_user_info.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
+                                                                        //test
+                                                                        // pension_user_info.cooldown = current_timestamp; //
 
-    msg!(
-        "指令:deposit_token 当前执行转账前pension_token_account的余额为:{}",
-        ctx.accounts.pension_token_account.amount
-    );
-    msg!(
-        "指令:deposit_token 当前执行转账前pension_user_info的amount为:{}",
-        pension_user_info.amount
-    );
+    // msg!(
+    //     "指令:deposit_token 当前执行转账前pension_token_account的余额为:{}",
+    //     ctx.accounts.pension_token_account.amount
+    // );
+    // msg!(
+    //     "指令:deposit_token 当前执行转账前pension_user_info的amount为:{}",
+    //     pension_user_info.amount
+    // );
 
     // 构建 CPI 转账操作
     let cpi_accounts = Transfer {
@@ -62,17 +62,17 @@ pub fn deposit_token(ctx: Context<DepositToken>) -> Result<()> {
 
     ctx.accounts.pension_token_account.reload()?;
 
-    msg!(
-        "指令:deposit_token 当前执行转账完成后pension_token_account的余额为:{}",
-        ctx.accounts.pension_token_account.amount
-    );
+    // msg!(
+    //     "指令:deposit_token 当前执行转账完成后pension_token_account的余额为:{}",
+    //     ctx.accounts.pension_token_account.amount
+    // );
 
     // 更新已经存储的金额
     pension_user_info.amount += pension_user_info.expected_amount;
 
-    msg!(
-        "指令:deposit_token 当前执行转账后pension_user_info的amount为:{}",
-        pension_user_info.amount
-    );
+    // msg!(
+    //     "指令:deposit_token 当前执行转账后pension_user_info的amount为:{}",
+    //     pension_user_info.amount
+    // );
     Ok(())
 }

@@ -43,9 +43,9 @@ pub fn initialize_sol(
     pension_account.expected_amount = expected_lamports;
     pension_account.expected_year = expected_year;
     pension_account.amount = expected_lamports as u64;
-    // pension_account.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30;
+    pension_account.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30;
     //test
-    pension_account.cooldown = Clock::get()?.unix_timestamp ;
+    // pension_account.cooldown = Clock::get()?.unix_timestamp ;
 
     Ok(())
 }
