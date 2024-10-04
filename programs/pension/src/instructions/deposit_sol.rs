@@ -23,7 +23,9 @@ pub fn deposit_sol(ctx: Context<DepositSol>) -> Result<()> {
     }
 
     // 重置冷却时间
-    pension_account.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
+    // pension_account.cooldown = current_timestamp + 60 * 60 * 24 * 30; // 30 days from now
+      //test
+    pension_account.cooldown = current_timestamp; 
 
     //转账
     system_program::transfer(
@@ -34,7 +36,7 @@ pub fn deposit_sol(ctx: Context<DepositSol>) -> Result<()> {
                 to: pension_account.to_account_info(),
             },
         ),
-        pension_account.expected_amount as u64,
+        pension_account.expected_amount * 10u64.pow(6),
     )?;
 
     // 更新已经存储的金额

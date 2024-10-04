@@ -16,7 +16,7 @@ pub mod pension {
     // 初始化sol养老金账户
     pub fn initialize_sol(
         ctx: Context<InitializeSol>,
-        expected_lamports: u16,
+        expected_lamports: u64,
         expected_year: u8,
     ) -> ProgramResult {
         instructions::initialize_sol(ctx, expected_lamports, expected_year)?;
@@ -26,7 +26,7 @@ pub mod pension {
     // 初始化usdt/usdc养老金账户
     pub fn initialize_token(
         ctx: Context<InitializeToken>,
-        expected_lamports: u16,
+        expected_lamports: u64,
         expected_year: u8,
     ) -> ProgramResult {
         instructions::initialize_token(ctx, expected_lamports, expected_year)?;

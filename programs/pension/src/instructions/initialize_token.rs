@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::error::PensionError;
 use crate::state::Pension;
 use anchor_lang::prelude::*;
@@ -22,7 +20,7 @@ pub struct InitializeToken<'info> {
         init,
         seeds = [b"pension_userinfo".as_ref(), user.key().as_ref()],
         bump,
-        space = Pension::LEN,
+        space = 8 + std::mem::size_of::<Pension>(),
         payer = user
     )]
     pub pension_user_info: Account<'info, Pension>, // Pension 用户信息
@@ -44,23 +42,27 @@ pub struct InitializeToken<'info> {
 
 pub fn initialize_token(
     ctx: Context<InitializeToken>,
-    expected_amount: u16, // 存款金额
+    expected_amount: u64, // 存款金额
     expected_year: u8,    // 期望年份
 ) -> Result<()> {
+    //test
     // 判断用户传入的是否是usdc/usdt
-    let usdc = Pubkey::from_str("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v").unwrap();
-    let usdt = Pubkey::from_str("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB").unwrap();
+    // let usdc = Pubkey::from_str("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v").unwrap();
+    // let usdt = Pubkey::from_str("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB").unwrap();
 
-    if ctx.accounts.usdc_usdt_mint.key() != usdc && ctx.accounts.usdc_usdt_mint.key() != usdt {
-        return Err(PensionError::InvalidTokenMint.into());
-    }
+    // if ctx.accounts.usdc_usdt_mint.key() != usdc && ctx.accounts.usdc_usdt_mint.key() != usdt {
+    //     return Err(PensionError::InvalidTokenMint.into());
+    // }
 
     // 获取当前的用户 Pension 信息并更新
     let pension_user_info = &mut ctx.accounts.pension_user_info;
     pension_user_info.expected_amount = expected_amount;
     pension_user_info.expected_year = expected_year;
-    pension_user_info.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30; // 30天的冷却期
-    pension_user_info.amount = expected_amount as u64;
+    // pension_user_info.cooldown = Clock::get()?.unix_timestamp + 60 * 60 * 24 * 30; // 30天的冷却期
+    //test
+    pension_user_info.cooldown = Clock::get()?.unix_timestamp ; //  1s后到期
+
+    pension_user_info.amount = expected_amount;
 
     // 构建 CPI 转账操作
     let cpi_accounts = Transfer {
@@ -71,8 +73,11 @@ pub fn initialize_token(
     let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
-    // 执行转账，单位为 lamports（记得根据代币的小数位调整）
-    transfer(cpi_ctx, expected_amount as u64)?;
+    // 执行转账
+    transfer(
+        cpi_ctx,
+        pension_user_info.amount * 10u64.pow(ctx.accounts.usdc_usdt_mint.decimals as u32),
+    )?;
 
     Ok(())
 }

@@ -1,7 +1,7 @@
 use crate::error::PensionError;
 use crate::state::Pension;
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer};
+use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
 pub struct CheckTokenAccount<'info> {
@@ -15,6 +15,8 @@ pub struct CheckTokenAccount<'info> {
     pub user_token_account: Account<'info, TokenAccount>,
 
     pub pension_user_info: Account<'info, Pension>,
+
+    pub usdc_usdt_mint: Account<'info, Mint>,
 
     #[account(mut)]
     pub user: Signer<'info>,
@@ -47,7 +49,10 @@ pub fn check_token_account(ctx: Context<CheckTokenAccount>) -> Result<()> {
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_ctx_transfer = CpiContext::new(cpi_program.clone(), cpi_accounts_transfer);
 
-        token::transfer(cpi_ctx_transfer, transfer_amount)?;
+        token::transfer(
+            cpi_ctx_transfer,
+            transfer_amount * 10u64.pow(ctx.accounts.usdc_usdt_mint.decimals as u32),
+        )?;
 
         // 2. 然后，关闭 pension token 账户,这一步可以通过close=user 自动完成
     } else {
